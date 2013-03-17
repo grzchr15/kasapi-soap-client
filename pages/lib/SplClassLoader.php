@@ -168,7 +168,7 @@ class SplClassLoader {
 		return $isFound;
 	}
 	public function printdebug( $msg ) {
-		echo $msg."</br>";
+		//echo $msg."</br>";
 	}
 }
 

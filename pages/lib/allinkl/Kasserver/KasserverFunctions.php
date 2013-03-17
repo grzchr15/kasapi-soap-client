@@ -19,12 +19,19 @@ class KasserverFunctions {
    * @return string
    */
   public function kas_action_ratelimited( $kas_user, $action, $Params ) {
+    $this->printdebug( 'callingX kas_action_ratelimited kas_user='. $kas_user ." action=".$action." Params=".print_r( $Params, 1 ) );
+    $this->printdebug( 'callingX kas_action_ratelimited CredentialToken='. $this->CredentialToken );
+
     if ( isset( $_SESSION[$kas_user]['flood_protection'][$action] ) ) {
+      $this->printdebug( 'calling kas_action_ratelimited last='. $_SESSION[$kas_user]['flood_protection'][$action] );
       $time_to_wait = $_SESSION[$kas_user]['flood_protection'][$action] - mktime();
     }else {
       $time_to_wait = 0;
+      $this->printdebug( 'calling kas_action_ratelimited NOWAIT='. $time_to_wait );
+
     }
     if ( $time_to_wait >= 0 ) {
+      $this->printdebug( 'calling kas_action_ratelimited usleep='. $time_to_wait );
       usleep( intval( $time_to_wait*1000000 ) );
     }
     try{
@@ -35,16 +42,16 @@ class KasserverFunctions {
           'KasRequestType' => $action,     // API-Funktion
           'KasRequestParams' => $Params           // Parameter an die API-Funktion
         ) );
-      error_log( 'calling kas_action_ratelimited ret='.print_r( $req, 1 ) );
+      $this->printdebug( 'calling kas_action_ratelimited ret='.print_r( $req, 1 ) );
       //$_SESSION[$kas_user]['flood_protection'][$action]
-      if(isset($req["KasFloodDelay"])){
-        error_log( 'calling kas_action_ratelimited ret='. $req["KasFloodDelay"] );
+      if ( isset( $req["KasFloodDelay"] ) ) {
+        $this->printdebug( 'calling kas_action_ratelimited ret='. $req["KasFloodDelay"] );
         $kas_flood_delay=$req["KasFloodDelay"];
-      }else{
+      }else {
         $kas_flood_delay=2;
       }
       $_SESSION[$kas_user]['flood_protection'][$action] = mktime() + $kas_flood_delay + 0.1;
-      
+
     }
     // Fehler abfangen und ausgeben
     catch ( SoapFault $fault ) {
@@ -60,13 +67,13 @@ class KasserverFunctions {
    * @param Params  empty
    * @return string
    */
-  public function get_accounts( $kas_user, $Params ) {
+  public function get_accounts( $kas_user, $val1, $Params ) {
     try
     {
       $Params = array(); // Parameter für die API-Funktion
-      error_log( 'calling kas_action_ratelimited '.'get_accounts' );
+      $this->printdebug( 'calling kas_action_ratelimited '.'get_accounts' );
       $req = $this->kas_action_ratelimited( $kas_user, 'get_accounts', $Params );
-      error_log( 'calling kas_action_ratelimited ret='.print_r( $req, 1 ) );
+      $this->printdebug( 'calling kas_action_ratelimited ret='.print_r( $req, 1 ) );
 
     }
 
@@ -126,6 +133,34 @@ class KasserverFunctions {
     }
     return $req;
   }
+
+  /**
+   * get_domains
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_domains( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => null
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_domains', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
   /**
    * get_mailaccounts
    *
@@ -134,7 +169,8 @@ class KasserverFunctions {
    * @return object mailaccounts
    */
   public function get_mailaccounts( $kas_user, $mail_login = null, $Params ) {
-    $Params = array(  'mail_login' => $mail_login
+    $Params = array(
+      'param1' => null
     );
     $req=null;
     try{
@@ -151,6 +187,365 @@ class KasserverFunctions {
 
     return $req;
   }
+
+
+  /**
+   * get_mailforwards
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_mailforwards( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_mailforwards', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
+  /**
+   * get_mailinglists
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_mailinglists( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_mailinglists', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
+  /**
+   * get_ftpusers
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_ftpusers( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_ftpusers', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
+  /**
+   * get_databases
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_databases( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_databases', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+  /**
+   * get_directoryprotection
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_directoryprotection( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_directoryprotection', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+  /**
+   * get_traffic
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_traffic( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_traffic', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
+  /**
+   * get_space
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_space( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_space', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+  /**
+   * get_accountressources
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_accountressources( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_accountressources', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
+  /**
+   * get_accountsettings
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_accountsettings( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_accountsettings', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
+  /**
+   * get_cronjobs
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_cronjobs( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_cronjobs', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+
+  /**
+   * get_mailstandardfilter
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_mailstandardfilter( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_mailstandardfilter', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+  /**
+   * get_softwareinstall
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_softwareinstall( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'mail_login' => $mail_login
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_softwareinstall', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+  /**
+   * get_dns_settings
+   *
+   * @param kas_user
+   * @param mail_login_user optionale Parameter
+   * @return object mailaccounts
+   */
+  public function get_dns_settings( $kas_user, $mail_login = null, $Params ) {
+    $Params = array(
+      'zone_host' => 'ns5.kasserver.com',
+      'nameserver' => 'ns5.kasserver.com'
+    );
+    $req=null;
+    try{
+      $req = $this->kas_action_ratelimited( $kas_user, 'get_dns_settings', $Params );
+    }
+
+    // Fehler abfangen und ausgeben
+    catch ( SoapFault $fault ) {
+      trigger_error( " Fehlernummer: {$fault->faultcode},
+                    Fehlermeldung: {$fault->faultstring},
+                    Verursacher: {$fault->faultactor},
+                    Details: {$fault->detail}", E_USER_ERROR );
+    }
+
+    return $req;
+  }
+  /**
+   * printdebug for this class
+   *
+   * @return string
+   */
+  public function printdebug( $msg ) {
+    //echo $msg."</br>";
+    return null;
+  }
+  
+
 }
 
 ?>

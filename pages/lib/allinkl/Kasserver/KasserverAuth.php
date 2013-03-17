@@ -57,7 +57,7 @@ class KasserverAuth {
 	 * @return string
 	 */
 	public function printdebug( $msg ) {
-		echo $msg."</br>";
+		//echo $msg."</br>";
 		return null;
 	}
 	
