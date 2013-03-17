@@ -1,5 +1,7 @@
 <?php
 
+
+
 require_once dirname( __FILE__ ) . '/../lib/SplClassLoader.php';
 require_once dirname( __FILE__ ) . '/../admin/' . 'config.php';
 require_once dirname( __FILE__ ) . '/../admin/' . 'printutils.php';
@@ -10,6 +12,12 @@ $classLoader = new SplClassLoader( 'allinkl\Kasserver', dirname( __FILE__ ) . '/
 $classLoader->register();
 //$classLoader->setNamespaceSeparator('/');
 
+
+///mail/config-v1.1.xml?emailaddress=somemail@somedomain.com
+
+$emailaddress="undefined";
+$mail_login="search at your  account data"; // "%EMAILADDRESS%";
+
 use allinkl\Kasserver\KasserverAuth;
 $KasserverAuth = new KasserverAuth(
 	$WSDL_AUTH,
@@ -17,8 +25,7 @@ $KasserverAuth = new KasserverAuth(
 	$kas_pass,  // KAS-Passwort
 	$session_lifetime,  // Gültigkeit des Tokens in Sek. bis zur neuen Authentifizierung
 	$session_update_lifetime
-
-);
+	);
 //print_r($KasserverAuth);
 //$CredentialToken;
 
@@ -30,58 +37,59 @@ $kf = new allinkl\Kasserver\KasserverFunctions(
 	);
 
 $Params = array(  'param_name' => 'param_value');
-
-///mail/config-v1.1.xml?emailaddress=somemail@somedomain.com
-
-$emailaddress="undefined";
-$mail_login="search at your  account data"; // "%EMAILADDRESS%";
-
 if ( isset( $_GET["emailaddress"] ) ) {
-	$emailaddress=$_GET["emailaddress"];
-	$req=$kf->get_mailaccounts( $kas_user, $emailaddress, $Params );
-	if(0){
-	  printecho ("<hr><pre>mailaccounts:\n");
-	  printecho (print_r($req,1));
-	  printecho ("</pre?>");
-	}
- $found_emailaddress=0;
-	if ( isset( $req["Response"] ) ) {
-		if ( isset( $req["Response"]["ReturnInfo"] ) ) {
-			 $req_lenght=$max = sizeof( $req["Response"]["ReturnInfo"] );
-				printdebug ("ReturnInfo cnt=".$req_lenght." emailaddress=".$emailaddress);
-				for ( $ii=0;$ii<$req_lenght;$ii++ ) {
-					$search_emailaddress=$req["Response"]["ReturnInfo"][$ii]["mail_adresses"];		
-					//printdebug "mail_login=".$req["Response"]["ReturnInfo"][$ii]["mail_login"]."</br>";
-					//printdebug "mail_adresses=".$req["Response"]["ReturnInfo"][$ii]["mail_adresses"]."</br>";
-					if($emailaddress == $search_emailaddress){
-						printdebug ("found search_emailaddress for ".$req["Response"]["ReturnInfo"][$ii]["mail_login"]);
-						$mail_login=$req["Response"]["ReturnInfo"][$ii]["mail_login"];
-						$found_emailaddress=1;
+	if($config_search_for_mail_login){
+
+
+		
+		$emailaddress=$_GET["emailaddress"];
+		$req=$kf->get_mailaccounts( $kas_user, $emailaddress, $Params );
+		if(0){
+		  printecho ("<hr><pre>mailaccounts:\n");
+		  printecho (print_r($req,1));
+		  printecho ("</pre?>");
+		}
+		$found_emailaddress=0;
+		if ( isset( $req["Response"] ) ) {
+			if ( isset( $req["Response"]["ReturnInfo"] ) ) {
+				 $req_lenght=$max = sizeof( $req["Response"]["ReturnInfo"] );
+					printdebug ("ReturnInfo cnt=".$req_lenght." emailaddress=".$emailaddress);
+					for ( $ii=0;$ii<$req_lenght;$ii++ ) {
+						$search_emailaddress=$req["Response"]["ReturnInfo"][$ii]["mail_adresses"];		
+						//printdebug "mail_login=".$req["Response"]["ReturnInfo"][$ii]["mail_login"]."</br>";
+						//printdebug "mail_adresses=".$req["Response"]["ReturnInfo"][$ii]["mail_adresses"]."</br>";
+						if($emailaddress == $search_emailaddress){
+							printdebug ("found search_emailaddress for ".$req["Response"]["ReturnInfo"][$ii]["mail_login"]);
+							$mail_login=$req["Response"]["ReturnInfo"][$ii]["mail_login"];
+							$found_emailaddress=1;
+						}
 					}
-				}
-				if(!$found_emailaddress)
-				{
-					
-					//printdebug ("response from kasserver emailaddress=".$emailaddress." Not found. Please contact your sysadmin ");
-				}
+					if(!$found_emailaddress)
+					{
+						
+						//printdebug ("response from kasserver emailaddress=".$emailaddress." Not found. Please contact your sysadmin ");
+					}
+			}
+			else {
+				printecho ("response from kasserver underclear.".print_r($req,1));
+			}
 		}
 		else {
-			printecho ("response from kasserver underclear.".print_r($req,1));
+				printecho ("response from kasserver underclear.".print_r($req,1));
 		}
+	}else{
+		$mail_login=$emailaddress;
 	}
-	else {
-			printecho ("response from kasserver underclear.".print_r($req,1));
-	}
-	
 
 
 }else {
-	printhtml ("missing emailaddress");
+	printhtml ("missing emailaddress of domain=".$maildomain);
 }
 
 
 
-$HTTP_HOST=$_SERVER["HTTP_HOST"];
+
+
 $HTTP_USER_AGENT=$_SERVER["HTTP_USER_AGENT"];
 $DOCUMENT_ROOT=$_SERVER["DOCUMENT_ROOT"];
 $SERVER_ADMIN=$_SERVER["SERVER_ADMIN"];
@@ -96,10 +104,10 @@ $str = <<<EODEOD
 <?xml version="1.0" encoding="UTF-8"?>
 
 <clientConfig version="1.1">
-  <emailProvider id="volkstanz.st">
-    <domain>volkstanz.st</domain>
-    <displayName>volkstanz.st Mail</displayName>
-    <displayShortName>volkstanz.st</displayShortName>
+  <emailProvider id="$maildomain">
+    <domain>$maildomain</domain>
+    <displayName>$maildomain Mail</displayName>
+    <displayShortName>$maildomain</displayShortName>
     <incomingServer type="imap">
       <hostname>$kas_account.kasserver.com</hostname>
       <port>993</port>
@@ -182,7 +190,7 @@ if(isset($_GET["file"]))
 }else{
 	$str="Usage: Thunderbird autoconfiguration ".$_SERVER["HTTP_HOST"]."/mail/config-v1.1.xml?emailaddress=someemail@".$_SERVER["HTTP_HOST"];
 	printhtml ($str);
-	phpinfo();
+	//phpinfo();
 }
 
 

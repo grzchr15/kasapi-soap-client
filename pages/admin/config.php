@@ -4,6 +4,17 @@
 $WSDL_AUTH = 'https://kasserver.com/schnittstelle/soap/wsdl/KasAuth.wsdl';
 $WSDL_API = 'https://kasserver.com/schnittstelle/soap/wsdl/KasApi.wsdl';
 
+$HTTP_HOST=$_SERVER["HTTP_HOST"];
+
+$pieces = explode(".", $HTTP_HOST);
+
+$maildomain="";
+for( $ii =1  ; $ii < sizeof($pieces) ; $ii++ ){
+	$maildomain.=$pieces[$ii];
+	if( $ii < sizeof($pieces)-1) 	$maildomain.=".";
+	
+}
+// Domain is calculated dynamic to remove autoconfig.maildomain part
 // Logindaten
 $kas_account = 'wxxxxxx';  // KAS-Logon ( main account or sub account)
 $kas_user = 'wxxxxxx';  // KAS-Logon
@@ -13,9 +24,11 @@ $session_update_lifetime = 'Y'; // Soll bei jeder Aktion die Sessionlifetime wie
                                 //   Wert in "$session_lifetime" gesetzt werden? ('Y' / 'N')
 
 								//Not yet supported from thunderbird
-$documentation_url="http://domain/webmail-einstellungen/";
-$documentation_url2="http://domain/webmail-einstellungen//webmail-einstellungen/imap";
+$documentation_url="http://$maildomain./webmail-einstellungen/";
+$documentation_url2="http://$maildomain./webmail-einstellungen//webmail-einstellungen/imap";
 
+$config_search_for_mail_login=0;  //if you want to unhide mail_login then add $search_for_mail_login=1; to your local config
+//This is a information disclosure as it make more information visible. ( Only Passwords protect then your Mail accounts, so use strong ones
 
 //Override default config with per sever creditentials								
 $extra_config_file=dirname(__FILE__)."/"."config_".$_SERVER["SERVER_NAME"].".php";
