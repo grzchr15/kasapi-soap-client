@@ -17,7 +17,21 @@ class KasserverAuth {
 			$CredentialToken=$_SESSION["CredentialToken"];
 		}else {
 
-			 print_r(get_loaded_extensions (false ));
+			 //print_r(get_loaded_extensions (false ));
+			 $extensions=get_loaded_extensions (false );
+			 $found_soap_extension=0;
+			 for($ii=0;$ii<sizeof($extensions);$ii++)
+			 {
+			 		if($extensions[$ii]=="soap")
+			 		{
+			 			$found_soap_extension=1;
+			 			}
+			 }
+			 if(!$found_soap_extension){
+			 		throw new Exception('PHP soap extsion not Found.');
+			 }else{
+			 	//echo "Fine PHP soap extsion  Found";
+			 }
 
 			try
 			{

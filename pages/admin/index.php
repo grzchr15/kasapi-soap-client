@@ -2,8 +2,13 @@
 /**
  * Admin Interface
  *
- * @author
- * */
+ * @author christian.bretterhofer@andritz.com
+ * 
+ */
+ 
+ 
+//Donot delete the next line, this causes a big security issue ( only try it a a local copy of this programm and not on a public exposed webserver 
+die("Access denied");
 
 require_once dirname( __FILE__ ) . '/../lib/SplClassLoader.php';
 require_once dirname( __FILE__ ) . '/' . 'config.php';
@@ -21,7 +26,7 @@ $KasserverAuth = new KasserverAuth(
 	$session_update_lifetime
 
 );
-print_r($KasserverAuth);
+//print_r($KasserverAuth);
 //$CredentialToken;
 
 echo "KasserverAuth->getCredentialToken(".$KasserverAuth->getCredentialToken();

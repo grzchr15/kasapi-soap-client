@@ -169,9 +169,10 @@ class KasserverFunctions {
    * @return object mailaccounts
    */
   public function get_mailaccounts( $kas_user, $mail_login = null, $Params ) {
+    
     $Params = array(
       'param1' => null
-    );
+      );
     $req=null;
     try{
       $req = $this->kas_action_ratelimited( $kas_user, 'get_mailaccounts', $Params );
