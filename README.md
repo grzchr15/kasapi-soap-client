@@ -42,9 +42,11 @@ Be shure to setup your site with PHP > 5.0 ( see http://all-inkl.com/wichtig/ )
 /pages/admin/config_autoconfig.bretterhofer.at.php needs the account data.
 
 = Voila= 
+
  Autokonfiguration with ALL-inkl for Thunderbird works
 
 = Thanks =
+
 With the help of Frank Steurich from Supportteam All-inkl and http://kasapi.kasserver.de/dokumentation there is a SOAP service API existant
 
 See Github  https://github.com/grzchr15/kasapi-soap-client for SOAP services for https://www.kasserver.com
@@ -52,3 +54,6 @@ See Github  https://github.com/grzchr15/kasapi-soap-client for SOAP services for
 Ar   http://www.bretterhofer.at/blog/projects/autoconfiguration-thunderbird-for-domains-served-from-allinkl-com i show my atempts to used that SOAP services to make Autoconfiguration Thunderbird happen.
 
 Feel free to fork and to make PULL requests
+
+= Wiki = 
+https://github.com/grzchr15/kasapi-soap-client/wiki
