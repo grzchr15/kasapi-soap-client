@@ -1,0 +1,5 @@
+
+RewriteEngine On
+
+RewriteBase /mail/
+RewriteRule ^(.*\.xml) /mail/index.php?file=$1 [QSA]
