@@ -96,7 +96,29 @@ $SERVER_ADMIN=$_SERVER["SERVER_ADMIN"];
 $SCRIPT_FILENAME=$_SERVER["SCRIPT_FILENAME"];
 $REQUEST_URI=$_SERVER["REQUEST_URI"];
 
+/*
 
+All-inkl http://all-inkl.com/wichtig/anleitungen/programme/e-mail/thunderbird/zusatzeinstellung-bei-imap-postfaechern_276.html
+IMAP StartTLS 143 Normal (non encrpyted
+SMTP StartTLS 587 Normal (non encrpyted
+
+not Supported:
+    <incomingServer type="imap">
+      <hostname>$kas_account.kasserver.com</hostname>
+      <port>993</port>
+      <socketType>SSL</socketType>
+      <authentication>password-encrypted</authentication>
+      <username>$mail_login</username>
+    </incomingServer>
+    <outgoingServer type="smtp">
+      <hostname>$kas_account.kasserver.com</hostname>
+      <port>465</port>
+      <socketType>SSL</socketType>
+      <authentication>password-encrypted</authentication>
+      <username>$mail_login</username>
+    </outgoingServer>
+
+*/
 
 
 
@@ -110,16 +132,9 @@ $str = <<<EODEOD
     <displayShortName>$maildomain</displayShortName>
     <incomingServer type="imap">
       <hostname>$kas_account.kasserver.com</hostname>
-      <port>993</port>
-      <socketType>SSL</socketType>
-      <authentication>password-encrypted</authentication>
-      <username>$mail_login</username>
-    </incomingServer>
-    <incomingServer type="imap">
-      <hostname>$kas_account.kasserver.com</hostname>
       <port>143</port>
       <socketType>STARTTLS</socketType>
-      <authentication>password-encrypted</authentication>
+      <authentication>password-cleartext</authentication>
       <username>$mail_login</username>
     </incomingServer>
     <incomingServer type="pop3">
@@ -138,16 +153,9 @@ $str = <<<EODEOD
     </incomingServer>
     <outgoingServer type="smtp">
       <hostname>$kas_account.kasserver.com</hostname>
-      <port>465</port>
-      <socketType>SSL</socketType>
-      <authentication>password-encrypted</authentication>
-      <username>$mail_login</username>
-    </outgoingServer>
-    <outgoingServer type="smtp">
-      <hostname>$kas_account.kasserver.com</hostname>
       <port>587</port>
       <socketType>STARTTLS</socketType>
-      <authentication>password-encrypted</authentication>
+      <authentication>password-cleartext</authentication>
       <username>$mail_login</username>
     </outgoingServer>
     <documentation url="$documentation_url">
